@@ -1,10 +1,10 @@
 import streamlit as st 
 import os 
 from langchain_groq import ChatGroq
-from langchain_openai import OpenAIEmbeddings 
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
+from langchain.chains.retrieval import create_retrieval_chain  # ✅ Correct import
 from langchain_core.prompts import ChatPromptTemplate  
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_community.vectorstores import FAISS
@@ -14,12 +14,12 @@ import time
 # Load environment variables
 load_dotenv()
 
-openai_api_key = os.getenv("OPENAI_API_KEY")
+gemini_api_key = os.getenv("GEMINI_API_KEY")
 groq_api_key = os.getenv("GROQ_API_KEY")
 
 # Ensure API keys are available
-if not openai_api_key:
-    st.error("❌ ERROR: Missing OPENAI_API_KEY! Check your .env file.")
+if not gemini_api_key:
+    st.error("❌ ERROR: Missing GEMINI_API_KEY! Check your .env file.")
 if not groq_api_key:
     st.error("❌ ERROR: Missing GROQ_API_KEY! Check your .env file.")
 
@@ -43,7 +43,8 @@ Question: {input}
 # Function to generate vector embeddings
 def vector_embeddings():
     if "vectors" not in st.session_state:
-        st.session_state.embeddings = OpenAIEmbeddings()
+        st.session_state.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=gemini_api_key)
+
         st.session_state.loader = PyPDFDirectoryLoader("./Data")
         st.session_state.docs = st.session_state.loader.load()
 
@@ -51,8 +52,9 @@ def vector_embeddings():
         st.session_state.text_splitter = RecursiveCharacterTextSplitter()
         st.session_state.final_documents = st.session_state.text_splitter.split_documents(st.session_state.docs[:20])
 
-        # Create FAISS vector store
-        st.session_state.vectors = FAISS.from_documents(st.session_state.final_documents, st.session_state.embeddings)
+        # Ensure embeddings exist before creating FAISS store
+        if "embeddings" in st.session_state:
+            st.session_state.vectors = FAISS.from_documents(st.session_state.final_documents, st.session_state.embeddings)
 
 # User input field
 prompt1 = st.text_input("Enter your Question")
@@ -78,8 +80,11 @@ if prompt1:
         response = r_chain.invoke({"input": prompt1})
         st.write("⏱️ Response Time:", time.process_time() - start)
 
+        # Debugging - Print response structure
+        print("DEBUG RESPONSE:", response)  # ✅ Check keys in terminal
+
         # Display answer
-        answer = response.get("answer", "⚠️ No answer found.")
+        answer = response.get("answer", response.get("output", "⚠️ No answer found."))
         st.write("💬 **Answer:**", answer)
 
         # Display document similarity results
