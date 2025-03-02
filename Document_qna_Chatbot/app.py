@@ -43,7 +43,6 @@ Question: {input}
     """
 )
 
-
 # Function to generate vector embeddings
 def vector_embeddings():
     if "vectors" not in st.session_state:
@@ -51,9 +50,13 @@ def vector_embeddings():
             model="models/embedding-001", google_api_key=gemini_api_key
         )
 
-        # Load PDF documents
-        st.session_state.loader = PyPDFDirectoryLoader("./Data")
-        st.session_state.docs = st.session_state.loader.load()
+        # Load PDF documents safely
+        try:
+            st.session_state.loader = PyPDFDirectoryLoader("./Data")
+            st.session_state.docs = st.session_state.loader.load()
+        except Exception as e:
+            st.error(f"❌ ERROR: Failed to load PDFs - {e}")
+            return
 
         if not st.session_state.docs:
             st.error("❌ ERROR: No PDFs found in the 'Data' folder!")
@@ -72,16 +75,15 @@ def vector_embeddings():
         print(f"Sample document: {st.session_state.final_documents[0].page_content[:300]}")
 
         # Ensure embeddings exist before creating FAISS store
-        if hasattr(st.session_state.embeddings, "embed_query"):
+        try:
             st.session_state.vectors = FAISS.from_documents(
                 st.session_state.final_documents,
-                st.session_state.embeddings.embed_query,  # Pass function instead of object
+                st.session_state.embeddings
             )
             st.write("✅ Vector Store database is ready!")
-        else:
-            st.error("❌ ERROR: Embedding model is invalid. Check API key or setup.")
+        except Exception as e:
+            st.error(f"❌ ERROR: Failed to create vector store - {e}")
             return
-
 
 # User input field
 prompt1 = st.text_input("Enter your Question")
@@ -97,25 +99,28 @@ if prompt1:
     else:
         start = time.process_time()
 
-        # Create chains
-        d_chain = create_stuff_documents_chain(llm, prompt)
-        retriever = st.session_state.vectors.as_retriever()
-        r_chain = create_retrieval_chain(retriever, d_chain)
+        try:
+            # Create chains
+            d_chain = create_stuff_documents_chain(llm, prompt)
+            retriever = st.session_state.vectors.as_retriever()
+            r_chain = create_retrieval_chain(retriever, d_chain)
 
-        # Get response
-        response = r_chain.invoke({"input": prompt1})
-        st.write("⏱️ Response Time:", time.process_time() - start)
+            # Get response
+            response = r_chain.invoke({"input": prompt1})
+            st.write("⏱️ Response Time:", time.process_time() - start)
 
-        # Debugging - Print response structure
-        print("DEBUG RESPONSE:", response)
+            # Debugging - Print response structure
+            print("DEBUG RESPONSE:", response)
 
-        # Display answer
-        answer = response.get("answer", response.get("output", "⚠️ No answer found."))
-        st.write("💬 **Answer:**", answer)
+            # Display answer
+            answer = response.get("answer", response.get("output", "⚠️ No answer found."))
+            st.write("💬 **Answer:**", answer)
 
-        # Display document similarity results
-        if "context" in response and response["context"]:
-            with st.expander("📄 Document Similarity Search"):
-                for doc in response["context"]:
-                    st.write(doc.page_content)
-                    st.write("-------------------")
+            # Display document similarity results
+            if "context" in response and response["context"]:
+                with st.expander("📄 Document Similarity Search"):
+                    for doc in response["context"]:
+                        st.write(doc.page_content)
+                        st.write("-------------------")
+        except Exception as e:
+            st.error(f"❌ ERROR: Failed to retrieve answer - {e}")
