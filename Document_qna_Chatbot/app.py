@@ -1,14 +1,14 @@
-import streamlit as st 
-import os 
+import streamlit as st
+import os
 from langchain_groq import ChatGroq
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains.retrieval import create_retrieval_chain  # ✅ Correct import
-from langchain_core.prompts import ChatPromptTemplate  
+from langchain.chains.retrieval import create_retrieval_chain
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_community.vectorstores import FAISS
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 import time
 
 # Load environment variables
@@ -20,10 +20,13 @@ groq_api_key = os.getenv("GROQ_API_KEY")
 # Ensure API keys are available
 if not gemini_api_key:
     st.error("❌ ERROR: Missing GEMINI_API_KEY! Check your .env file.")
+    st.stop()
+
 if not groq_api_key:
     st.error("❌ ERROR: Missing GROQ_API_KEY! Check your .env file.")
+    st.stop()
 
-st.title("Q&A Chatbot") 
+st.title("Q&A Chatbot")
 
 # Initialize ChatGroq
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="Llama3-8b-8192")
@@ -38,23 +41,47 @@ Please provide the most accurate response based on the question.
 <context>
 Question: {input}
     """
-) 
+)
+
 
 # Function to generate vector embeddings
 def vector_embeddings():
     if "vectors" not in st.session_state:
-        st.session_state.embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=gemini_api_key)
+        st.session_state.embeddings = GoogleGenerativeAIEmbeddings(
+            model="models/embedding-001", google_api_key=gemini_api_key
+        )
 
+        # Load PDF documents
         st.session_state.loader = PyPDFDirectoryLoader("./Data")
         st.session_state.docs = st.session_state.loader.load()
 
-        # Initialize text splitter correctly
+        if not st.session_state.docs:
+            st.error("❌ ERROR: No PDFs found in the 'Data' folder!")
+            return
+
+        # Initialize text splitter
         st.session_state.text_splitter = RecursiveCharacterTextSplitter()
         st.session_state.final_documents = st.session_state.text_splitter.split_documents(st.session_state.docs[:20])
 
+        if not st.session_state.final_documents:
+            st.error("❌ ERROR: No text extracted from PDFs!")
+            return
+
+        # Debugging - Check document structure
+        print(f"Documents loaded: {len(st.session_state.final_documents)}")
+        print(f"Sample document: {st.session_state.final_documents[0].page_content[:300]}")
+
         # Ensure embeddings exist before creating FAISS store
-        if "embeddings" in st.session_state:
-            st.session_state.vectors = FAISS.from_documents(st.session_state.final_documents, st.session_state.embeddings)
+        if hasattr(st.session_state.embeddings, "embed_query"):
+            st.session_state.vectors = FAISS.from_documents(
+                st.session_state.final_documents,
+                st.session_state.embeddings.embed_query,  # Pass function instead of object
+            )
+            st.write("✅ Vector Store database is ready!")
+        else:
+            st.error("❌ ERROR: Embedding model is invalid. Check API key or setup.")
+            return
+
 
 # User input field
 prompt1 = st.text_input("Enter your Question")
@@ -62,7 +89,6 @@ prompt1 = st.text_input("Enter your Question")
 # Button to generate embeddings
 if st.button("Document Embeddings"):
     vector_embeddings()
-    st.write("✅ Vector Store database is ready!")
 
 # Handle question input
 if prompt1:
@@ -81,7 +107,7 @@ if prompt1:
         st.write("⏱️ Response Time:", time.process_time() - start)
 
         # Debugging - Print response structure
-        print("DEBUG RESPONSE:", response)  # ✅ Check keys in terminal
+        print("DEBUG RESPONSE:", response)
 
         # Display answer
         answer = response.get("answer", response.get("output", "⚠️ No answer found."))
