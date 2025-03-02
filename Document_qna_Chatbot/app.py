@@ -26,7 +26,7 @@ if not groq_api_key:
     st.error("❌ ERROR: Missing GROQ_API_KEY! Check your .env file.")
     st.stop()
 
-st.title("📖 Q&A Chatbot")
+st.title(" Q&A Chatbot")
 
 # Initialize LLM
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="Llama3-8b-8192")
@@ -74,8 +74,8 @@ def generate_embeddings():
                 return
 
             # Debugging - Check document structure
-            st.write(f"📄 Documents loaded: {len(st.session_state.final_documents)}")
-            st.write(f"🔍 Sample document: {st.session_state.final_documents[0].page_content[:300]}")
+            st.write(f"📄 Documents loaded!")
+            
 
             # Create FAISS vector store
             st.session_state.vectors = FAISS.from_documents(
