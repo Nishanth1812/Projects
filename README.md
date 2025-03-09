@@ -10,9 +10,7 @@
 
 ## 🌟 Overview
 
-Welcome to my AI & Machine Learning portfolio! This repository showcases production-ready projects leveraging cutting-edge technologies in artificial intelligence, natural language processing, and data science.
-
-Each project demonstrates practical applications of AI/ML with a focus on solving real-world problems.
+A showcase of production-ready AI & Machine Learning projects solving real-world problems.
 
 ---
 
@@ -20,19 +18,9 @@ Each project demonstrates practical applications of AI/ML with a focus on solvin
 
 ### 🤖 Document Q&A Intelligent Assistant
 
-**About:** An intelligent question-answering system that extracts insights from uploaded documents, providing accurate responses based on document context.
+AI-powered question-answering system for document analysis.
 
-**Key Features:**
-- Context-aware responses from document knowledge
-- Support for multiple file formats (PDF, DOCX, TXT)
-- Conversational memory to maintain discussion context
-- Advanced semantic search capabilities
-
-**Tech Stack:**
-- Google Text Embeddings
-- LangChain for context engineering
-- Vector database for semantic retrieval
-- Streamlit for interactive UI
+**Tech Stack:** Google Text Embeddings, LangChain, Vector DB, Streamlit
 
 <div align="right">
   
@@ -43,19 +31,9 @@ Each project demonstrates practical applications of AI/ML with a focus on solvin
 
 ### 📚 Personalized Learning Recommendation Engine
 
-**About:** An AI-powered recommendation system that suggests personalized educational resources based on learner preferences, past interactions, and learning goals.
+AI recommendation system for educational resources.
 
-**Key Features:**
-- Personalized course suggestions based on user profile
-- Content similarity analysis with NLP
-- Learning path optimization
-- Skill gap analysis
-
-**Tech Stack:**
-- Google Text Embeddings for semantic understanding
-- Word2Vec for content representation
-- Collaborative filtering algorithms
-- Flask API backend with Streamlit frontend
+**Tech Stack:** Google Text Embeddings, Word2Vec, Flask, Streamlit
 
 <div align="right">
   
@@ -67,10 +45,10 @@ Each project demonstrates practical applications of AI/ML with a focus on solvin
 ## 🔬 Projects In Development
 
 ### 🔹 Predictive Analytics Dashboard
-Real-time data visualization and predictive analysis platform using machine learning models.
+Real-time data visualization with ML forecasting
 
 ### 🔹 Natural Language Processing API
-Scalable API for text classification, sentiment analysis, and named entity recognition.
+Enterprise API for text analysis
 
 ---
 
@@ -89,18 +67,7 @@ Scalable API for text classification, sentiment analysis, and named entity recog
 
 ---
 
-## 📊 Project Statistics
-
-| Project | Status | Users | Stars |
-|---------|--------|-------|-------|
-| Document Q&A Assistant | ✅ Active | 500+ | ★★★★☆ |
-| Course Recommendation | 🚧 In Progress | - | - |
-
----
-
 ## 🤝 Let's Connect!
-
-I'm always interested in collaboration opportunities and discussions around AI and machine learning projects.
 
 <div align="center">
 
