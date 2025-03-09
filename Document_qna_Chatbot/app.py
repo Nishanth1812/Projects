@@ -72,4 +72,11 @@ def generate_embeddings():
         try:
             # Initialize embeddings
             st.session_state.embeddings = GoogleGenerativeAIEmbeddings(
-                model="models/embedding-001", google_api_key=gemi
+                model="models/embedding-001", google_api_key=gemini_api_key
+            )
+            st.success("✅ Embeddings initialized successfully!")
+        except Exception as e:
+            st.error(f"❌ ERROR: Failed to initialize embeddings: {str(e)}")
+
+# Call function to generate embeddings
+generate_embeddings()
