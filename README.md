@@ -24,7 +24,7 @@ AI-powered question-answering system for document analysis.
 
 <div align="right">
   
-  [📘 Documentation](https://github.com/Nishanth1812) | [🔗 Live Demo](https://projects-86komz42enip8tavm3j76s.streamlit.app/)
+  [📘 Documentation](https://github.com/Nishanth1812/Projects/blob/main/Ml_Projects/Course_Recommendation_System/README.md) | [🔗 Live Demo](https://projects-86komz42enip8tavm3j76s.streamlit.app/)
 </div>
 
 ---
@@ -37,7 +37,7 @@ AI recommendation system for educational resources.
 
 <div align="right">
   
-  [📘 Documentation](https://github.com/Nishanth1812) | [🚧 Coming Soon]()
+  [📘 Documentation](https://github.com/Nishanth1812/Projects/blob/main/Document_qna_Chatbot/README.md) | [🚧 Coming Soon]()
 </div>
 
 ---
