@@ -44,12 +44,11 @@ AI recommendation system for educational resources.
 
 ## 🔬 Projects In Development
 
-### 🔹 Predictive Analytics Dashboard
-Real-time data visualization with ML forecasting
+### 🔹 Full Stack Music Streaming Service
+AI-powered recommendation engine with personalized playlists and music discovery
 
-### 🔹 Natural Language Processing API
-Enterprise API for text analysis
-
+### 🔹 Revenue management system
+Interactive and powerful application to manage your money 
 ---
 
 ## 💻 Tech Stack
