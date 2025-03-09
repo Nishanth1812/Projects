@@ -16,8 +16,6 @@ from database import init_db, doc_save, get_doc
 
 # Initialize the database
 init_db()
-=======
->>>>>>> f8e3b8238bc7eb0e67d1599e1b97a07dc0b1c71b
 
 # Load environment variables
 load_dotenv()
