@@ -1,13 +1,12 @@
 import streamlit as st
 import os
-import time
 from langchain_groq import ChatGroq
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.document_loaders import PyPDFDirectoryLoader, PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 from database import init_db, doc_save, get_doc
@@ -68,7 +67,7 @@ if uploaded_file:
 
 # Function to generate vector embeddings
 def generate_embeddings():
-    if "vectors" not in st.session_state:
+    if "embeddings" not in st.session_state:
         try:
             # Initialize embeddings
             st.session_state.embeddings = GoogleGenerativeAIEmbeddings(
@@ -80,3 +79,33 @@ def generate_embeddings():
 
 # Call function to generate embeddings
 generate_embeddings()
+
+# **Q&A Section**
+st.subheader("💬 Ask a Question")
+
+# User input
+user_question = st.text_input("🔎 Ask something about the uploaded document:")
+
+if user_question:
+    # Retrieve the document content from the database
+    document_content = get_doc(uploaded_file.name)
+
+    if document_content:
+        # Split document into smaller chunks
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+        document_chunks = text_splitter.split_text(document_content)
+
+        # Convert text chunks to embeddings
+        vectorstore = FAISS.from_texts(document_chunks, st.session_state.embeddings)
+        retriever = vectorstore.as_retriever()
+
+        # Create chains
+        document_chain = create_stuff_documents_chain(llm, prompt)
+        retrieval_chain = create_retrieval_chain(retriever, document_chain)
+
+        # Get response
+        response = retrieval_chain.invoke({"input": user_question})
+        st.success("✅ Answer:")
+        st.write(response["output_text"])
+    else:
+        st.error("❌ ERROR: No document found! Please upload a document first.")
