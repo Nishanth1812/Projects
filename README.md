@@ -51,8 +51,9 @@ A YOLO-based segmentation model deployed as a Streamlit web app for detecting po
 ### 🔹 Full Stack Music Streaming Service
 AI-powered recommendation engine with personalized playlists and music discovery.
 
-### 🔹 Revenue Management System
-Interactive and powerful application to manage your finances effectively.
+### 🔹 Brain Tumor Classification
+A simple classification system using custom cnn architecture
+
 
 ---
 
