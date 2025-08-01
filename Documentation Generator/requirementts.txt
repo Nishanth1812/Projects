@@ -1,5 +1,0 @@
-gitpython
-mcp
-groq
-python-dotenv
-requests
