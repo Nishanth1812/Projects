@@ -1,18 +1,19 @@
-venv/
-.env/
+# Python-generated files
+*__pycache__/
+*.py[oc]
+*build/
+*dist/
+*wheels/
+*.egg-info
+*uv.lock/
+*pyproject.toml/
+*.python-version/
 
-# # Python-generated files
-# __pycache__/
-# *.py[oc]
-# build/
-# dist/
-# wheels/
-# *.egg-info
-# uv.lock/
-# pyproject.toml/
-# .python-version/
 
 
 
 # Virtual environments
-.venv/
+*.venv/
+*venv/
+*.env
+
