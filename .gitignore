@@ -15,5 +15,5 @@
 # Virtual environments
 *.venv/
 *venv/
-*.env
+# *.env
 

@@ -1,0 +1,9 @@
+scikit-learn
+pandas
+numpy
+fastf1
+requests
+Django
+pymongo
+dnspython
+python-dotenv
