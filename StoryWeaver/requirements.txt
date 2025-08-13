@@ -1,9 +1,0 @@
-tensorflow
-numpy 
-pandas
-scikit-learn
-python-dotenv
-pymongo
-tqdm
-kagglehub
-ipykernel
