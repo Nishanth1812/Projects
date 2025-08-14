@@ -17,8 +17,8 @@ import string
 
 # Declaring the constants
 
-MODEL_PATH='best_story_model.keras'
-TOKENIZER_NAME='tokenizer.pickle'
+MODEL_PATH=r'StoryWeaver\Models\best_story_model.keras'
+TOKENIZER_NAME=r'StoryWeaver\Models\tokenizer.pickle'
 max_sequence_length=60
 
 
