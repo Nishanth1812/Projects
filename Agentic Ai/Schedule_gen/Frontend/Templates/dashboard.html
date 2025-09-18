@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Taskify</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="particle-container">
+      <div class="particle p1"></div>
+      <div class="particle p2"></div>
+      <div class="particle p3"></div>
+      <div class="particle p4"></div>
+      <div class="particle p5"></div>
+      <div class="particle p6"></div>
+      <div class="particle p7"></div>
+      <div class="particle p8"></div>
+    </div>
+    <div class="flash-messages">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
+
+    <div class="container dashboard-container">
+      <header class="dashboard-header">
+        <div class="user-info">
+          <h1>Welcome, {{ username }}!</h1>
+          <p>This is your dashboard. More features coming soon.</p>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary"
+          >Logout</a
+        >
+      </header>
+      <main>
+        <div class="dashboard-content">
+          <div class="feature-card">
+            <h3>📋 Task Manager</h3>
+            <p>Create and manage your tasks efficiently.</p>
+            <button class="btn btn-primary" disabled>Coming Soon</button>
+          </div>
+          <div class="feature-card">
+            <h3>📊 Analytics</h3>
+            <p>Track your productivity and task completion rates.</p>
+            <button class="btn btn-primary" disabled>Coming Soon</button>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  </body>
+</html>
