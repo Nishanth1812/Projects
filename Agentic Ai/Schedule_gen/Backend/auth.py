@@ -1,11 +1,19 @@
-from flask import Blueprint,request,flash,render_template,redirect,url_for,session
+import warnings
+warnings.filterwarnings('ignore')
+
+from flask import Blueprint,request,flash,render_template,redirect,url_for,session,jsonify
 from flask_jwt_extended import create_access_token 
 from werkzeug.security import generate_password_hash,check_password_hash
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
 import os 
-from utils import validate_password,validate_username
+import logging
+from .utils import validate_password,validate_username
+from functools import wraps
+
+# Get application logger
+app_logger = logging.getLogger('app')
 
 
 
@@ -52,6 +60,12 @@ def register():
             flash("Passwords do not match , try again")
             return render_template("register.html")
         
+        # Check if username already exists
+        existing_user = user_col.find_one({"username": username})
+        if existing_user:
+            flash("Username already exists. Please choose a different username.", "warning")
+            return render_template('register.html')
+        
         # Hashing the password
         try:
             hashed_pass=generate_password_hash(password=password)
@@ -65,14 +79,15 @@ def register():
             res=user_col.insert_one(user_data)
         
             if res.inserted_id:
-                flash("Registration Succesful. You can login")
+                app_logger.info(f'New user registered: {username}')
+                flash("Registration Successful. You can login now!", "success")
                 return redirect(url_for('auth.login'))
             else:
                 flash("Registration failed")
                 return render_template('register.html')
         except Exception as e:
-            flash("Error occured during registration , try again")
-            print(f"Error during registration: {e}")
+            app_logger.error(f'Registration error for user {username}: {str(e)}')
+            flash("Error occurred during registration, try again")
             return render_template('register.html')
         
     return render_template('register.html') 
@@ -108,23 +123,24 @@ def login():
             )
             
             # Creating session
-            
             session['user_id']=str(user['_id'])
             session['username']=username
+            session['logged_in']=True  # THIS IS THE MISSING LINE!
             
             # Creating access token
-            
             token=create_access_token(identity=username)
             session['access_token']=token
             
+            app_logger.info(f'User logged in: {username}')
+            
             # Redirect to dashboard
-            flash(f"Welcome back {username}")
+            flash(f"Welcome back {username}!", "success")
             return redirect(url_for("dashboard"))
             
         
         except Exception as e:
-            flash("Error while logging in ,try again",'error')
-            print(f"Login error: {e}")
+            app_logger.error(f'Login error for user {username}: {str(e)}')
+            flash("Error while logging in, try again",'error')
             
     return render_template("login.html")
 
@@ -155,29 +171,30 @@ def change_password():
                 return render_template("change_password.html")
                         
             # Validating new password
-        
             valid_pass,pass_issue=validate_password(password=new_password)
             if not valid_pass:
                 flash(pass_issue)
-                render_template("change_password.html")
+                return render_template("change_password.html")
             
             if new_password!=confirm_new:
                 flash("The passwords do not match")
                 return render_template("change_password.html")
             
-            
             # updating password
-            hashed_pass=generate_password_hash(password=password)
+            hashed_pass=generate_password_hash(password=new_password)
             user_col.update_one(
                 {'_id': user['_id']}, #type: ignore
-                {'$set': {'last_login': datetime.utcnow()}}
+                {'$set': {'password': hashed_pass, 'last_login': datetime.utcnow()}}
             )
+            
+            flash("Password updated successfully", "success")
+            return redirect(url_for('dashboard'))
             
 
         except Exception as e:
             flash("Error while changing password",'error')
             print(f"Error while changing the password: {e}")
-            render_template("change_password.html")
+            return render_template("change_password.html")
         
     
     return render_template("change_password.html")
@@ -196,3 +213,15 @@ def logout():
 
 
 
+
+def login_check(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        if session.get("logged_in"):
+            return f(*args, **kwargs)
+        else:
+            # Check if it's an AJAX request (for JSON responses)
+            if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.path.startswith('/Upload'):
+                return jsonify({"error": "Not authenticated"}), 401
+            return redirect("/")
+    return decorated_func
