@@ -1,0 +1,41 @@
+[33mc54099c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mSchedule_Gen[m[33m, [m[1;31morigin/Schedule_Gen[m[33m)[m HEAD@{0}: commit: adding upto doc upload
+[33m4230f7e[m HEAD@{1}: reset: moving to HEAD~3
+[33m689b4d6[m HEAD@{2}: rebase (abort): returning to refs/heads/Schedule_Gen
+[33m689b4d6[m HEAD@{3}: rebase (abort): returning to refs/heads/Schedule_Gen
+[33mff14f7c[m HEAD@{4}: rebase (continue): Adding doc upload
+[33m15ac595[m HEAD@{5}: rebase (continue): Adding auth module
+[33m689b4d6[m HEAD@{6}: rebase (abort): returning to refs/heads/Schedule_Gen
+[33m689b4d6[m HEAD@{7}: rebase (abort): returning to refs/heads/Schedule_Gen
+[33m689b4d6[m HEAD@{8}: reset: moving to HEAD
+[33m689b4d6[m HEAD@{9}: rebase (abort): returning to refs/heads/Schedule_Gen
+[33m689b4d6[m HEAD@{10}: rebase (abort): returning to refs/heads/Schedule_Gen
+[33m8409f2c[m HEAD@{11}: reset: moving to 8409f2c4f7c2f4977c137d1f012d2443d8239390
+[33m8409f2c[m HEAD@{12}: reset: moving to 8409f2c4f7c2f4977c137d1f012d2443d8239390
+[33m8409f2c[m HEAD@{13}: reset: moving to 8409f2c4f7c2f4977c137d1f012d2443d8239390
+[33m8409f2c[m HEAD@{14}: checkout: moving from Schedule_Gen to Schedule_Gen
+[33m8409f2c[m HEAD@{15}: rebase (continue): Adding doc upload
+[33mc554be0[m HEAD@{16}: commit: Updating project
+[33m689b4d6[m HEAD@{17}: commit: updating gitignore
+[33mc2bbb3a[m HEAD@{18}: commit: Adding doc upload
+[33m58555ae[m HEAD@{19}: checkout: moving from Schedule_Gen to Schedule_Gen
+[33m58555ae[m HEAD@{20}: commit: Adding auth module
+[33m4230f7e[m HEAD@{21}: checkout: moving from Schedule_Gen to Schedule_Gen
+[33m4230f7e[m HEAD@{22}: checkout: moving from Schedule_Gen to Schedule_Gen
+[33m4230f7e[m HEAD@{23}: pull --tags origin Schedule_Gen: Merge made by the 'ort' strategy.
+[33mc72ef93[m HEAD@{24}: checkout: moving from Schedule_Gen to Schedule_Gen
+[33mc72ef93[m HEAD@{25}: commit: Adding auth module
+[33m190a4e9[m HEAD@{26}: commit: restructuring
+[33m3d9fcd7[m HEAD@{27}: commit: adding auth files
+[33me9d80e5[m HEAD@{28}: checkout: moving from Schedule_Gen to Schedule_Gen
+[33me9d80e5[m HEAD@{29}: commit: Initial commit
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{30}: reset: moving to HEAD~
+[33m9206bbd[m HEAD@{31}: commit: Initial commit
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{32}: checkout: moving from main to Schedule_Gen
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{33}: checkout: moving from dev to main
+[33m95194d3[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{34}: reset: moving to HEAD
+[33m95194d3[m[33m ([m[1;31morigin/dev[m[33m, [m[1;32mdev[m[33m)[m HEAD@{35}: commit: Adding Schedule generator
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{36}: checkout: moving from dev to dev
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{37}: checkout: moving from dev to dev
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{38}: checkout: moving from main to dev
+[33m3ebfbc9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{39}: commit: removing schedule_gen.zip
+[33m3bec474[m HEAD@{40}: clone: from https://github.com/Nishanth1812/Projects.git
