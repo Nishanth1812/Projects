@@ -204,8 +204,18 @@ def change_password():
 @auth_bp.route('/logout')
 def logout():
     if "username" in session:
+        username = session.get('username', 'Unknown')
         session.clear()
-        flash("Succesfully logged out","info")
+        
+        # Clear application logs on logout
+        try:
+            from app import app_logs
+            app_logs.clear_logs()
+            app_logger.info(f'Logs cleared for user: {username} on logout')
+        except Exception as e:
+            app_logger.error(f'Error clearing logs on logout: {str(e)}')
+        
+        flash("Successfully logged out","success")
     else:
         flash("You have to login first",'error')
         
