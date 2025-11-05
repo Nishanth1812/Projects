@@ -1,10 +1,10 @@
 streamlit
-langchain
-langchain-groq
-langchain-google-genai
-langchain-core
-langchain-community
+langchain-core==0.2.43
+langchain-community==0.2.19
+langchain-groq==0.1.10
+langchain-google-genai==1.0.5
 pypdf
 faiss-cpu
 python-dotenv
 SQLAlchemy
+langchain-chains
