@@ -1,115 +1,42 @@
-from flask import Blueprint, request, flash, session, render_template
-from flask_jwt_extended import create_access_token #type: ignore
-from werkzeug.security import generate_password_hash, check_password_hash
-from Utils.utils import gen_embeddings, compare_embeddings, decode_image
-from Utils.db_utils import save_user, user_exists, save_embedding, load_embedding, load_users
 
-auth_bp = Blueprint("Auth", __name__)
-
-
-@auth_bp.route("/register", methods=['GET', 'POST'])
-def register():
-    if request.method == 'GET':
-        return render_template('register.html')
-
-    data = request.get_json(silent=True) or {}
-    username = data.get("username", "").strip()
-    password = data.get("password", "")
-    confirm_pass = data.get("confirm_password", "")
-    email = data.get("email", "").strip()
-    face = data.get("face_image")
-
-    if not username:
-        flash("Username is required.", 'error')
-        return {'status': 'error', 'message': "Username is required."}, 400
-    if not email:
-        flash("Email is required.", 'error')
-        return {'status': 'error', 'message': "Email is required."}, 400
-    if not password:
-        flash("Password is required.", 'error')
-        return {'status': 'error', 'message': "Password is required."}, 400
-    if password != confirm_pass:
-        flash("Passwords do not match.", 'error')
-        return {'status': 'error', 'message': "Passwords do not match."}, 400
-    if not face:
-        flash("Face snapshot missing.", 'error')
-        return {'status': 'error', 'message': "Face snapshot missing."}, 400
-
-    if user_exists(username):
-        flash('User already registered.', 'error')
-        return {'status': 'error', 'message': 'User already registered.'}, 409
-
-    import time
-    start = time.time()
-    
-    img = decode_image(face)
-    if img is None:
-        flash('Unable to decode face snapshot.', 'error')
-        return {'status': 'error', 'message': 'Unable to decode face snapshot.'}, 400
-    
-    print(f"Image decode time: {time.time() - start:.2f}s")
-    decode_time = time.time()
-
-    embeddings = gen_embeddings(img)
-    if embeddings is None:
-        flash('Unable to process facial embedding.', 'error')
-        return {'status': 'error', 'message': 'Unable to process facial embedding.'}, 400
-    
-    print(f"Embedding generation time: {time.time() - decode_time:.2f}s")
-    embed_time = time.time()
-
+def load_users():
     try:
-        save_user(username, email, generate_password_hash(password))
-        save_embedding(username, embeddings)
-        print(f"Database save time: {time.time() - embed_time:.2f}s")
-        print(f"Total registration time: {time.time() - start:.2f}s")
-        flash('User registered successfully.', 'success')
-        return {'status': 'success', 'message': 'User registered successfully.'}
+        with get_db_conn() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("SELECT username, email, password_hash FROM users")
+                return {r['username']: {'email': r['email'], 'password': r['password_hash']} for r in cur.fetchall()} 
     except Exception as e:
-        flash(f'Registration failed: {str(e)}', 'error')
-        return {'status': 'error', 'message': f'Registration failed: {str(e)}'}, 500
+        print(f"Error while loading users: {e}")
+        return {} 
+    
 
-@auth_bp.route("/login", methods=['GET'])
-def login_page():
-    return render_template('login.html')
-
-
-@auth_bp.route("/dashboard", methods=['GET'])
-def dashboard():
-    username = session.get('username')
-    token = session.get('access token', '')
-    token_preview = f"{token[:18]}…{token[-6:]}" if len(token) > 32 else token if token else None
-    face_ready = load_embedding(username) is not None if username else False
-    return render_template('dashboard.html', username=username, face_ready=face_ready, token_preview=token_preview)
-
-
-@auth_bp.route("/login_cred", methods=['POST'])
-def login_cred():
-    data = request.get_json(silent=True) or {}
-    username = data.get("username", "").strip()
-    password = data.get("password", "")
-
-    if not username:
-        flash("Username is required.", 'error')
-        return {'status': 'error', 'message': "Username is required."}, 400
-    if not password:
-        flash("Password is required.", 'error')
-        return {'status': 'error', 'message': "Password is required."}, 400
-
-    user = (load_users() or {}).get(username)
-    if not user:
-        flash('User not found.', 'error')
-        return {'status': 'error', 'message': 'User not found.'}, 404
-
-    if not user.get('password') or not check_password_hash(user['password'], password):
-        flash('Incorrect username or password.', 'error')
-        return {'status': 'error', 'message': 'Incorrect username or password.'}, 401
-
-    session['username'] = username
-    session['access token'] = create_access_token(identity=username)
-    flash('Login successful.', 'success')
-    return {'status': 'success', 'message': 'Login successful.'}
-
-
+def save_user(username,email,password_hash=None):
+    try:
+        with get_db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO users (username, email, password_hash)
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT (username) DO UPDATE SET
+                        email = EXCLUDED.email,
+                        password_hash = COALESCE(EXCLUDED.password_hash, users.password_hash),
+                        updated_at = CURRENT_TIMESTAMP
+                    RETURNING id
+                """, (username, email, password_hash))
+                return cur.fetchone()[0]
+    
+    except Exception as e:
+        print(f"Error while saving the user: {e}")
+        return None  
     
     
+def user_exists(username):
+    try:
+        with get_db_conn() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT 1 FROM users WHERE username = %s LIMIT 1", (username,))
+                return cur.fetchone() is not None 
+    
+    except Exception as e:
+        print(f"Error with the database: {e}")
+        return False 

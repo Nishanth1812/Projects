@@ -1,20 +1,59 @@
 # Python-generated files
-*__pycache__/
-*.py[oc]
-*build/
-*dist/
-*wheels/
-*.egg-info
-*uv.lock/
-*pyproject.toml/
-*.python-version/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python virtual environments
+.venv/
+venv/
+env/
+.env
+.env.local
+.env.*.local
+
+# Python project files
+uv.lock
+pyproject.toml
+*.python-version
+.python-version
+
+# Data files
 *.csv
 *.json
+*.xml
+*.yaml
+*.yml
 
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-
-# Virtual environments
-*.venv/
-*venv/
-*.env
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
