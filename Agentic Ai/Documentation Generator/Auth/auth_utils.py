@@ -3,6 +3,7 @@ from psycopg2.extras import RealDictCursor
 from contextlib import contextmanager
 import os 
 from dotenv import load_dotenv 
+from cryptography.fernet import Fernet 
 
 load_dotenv()
 
@@ -35,8 +36,16 @@ def validate_password(password):
 
 
 
-def secure_token():
-    pass 
+def secure_token(token):
+    try:
+        fernet_key = os.environ.get('FERNET_KEY')
+        if not fernet_key:
+            raise ValueError("FERNET_KEY environment variable not found")
+        f = Fernet(fernet_key.encode())
+        encrypted_token = f.encrypt(token.encode())
+        return encrypted_token.decode()
+    except Exception as e:
+        raise Exception(f"Error securing token: {str(e)}") 
 
 """Database Utils"""
 
@@ -71,44 +80,48 @@ def get_db_conn():
         
         
 def init_database():
-    
     with get_db_conn() as conn:
         with conn.cursor() as cur:
-            
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
                     username VARCHAR(255) UNIQUE NOT NULL,
                     email VARCHAR(255) UNIQUE NOT NULL,
                     password_hash TEXT,
+                    pat_token TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             """)
             
             cur.execute("""
-                DO $$
-                BEGIN
+                DO $$                 BEGIN
                     IF NOT EXISTS (
                         SELECT 1 FROM information_schema.columns
                         WHERE table_name='users' AND column_name='password_hash'
                     ) THEN
                         ALTER TABLE users ADD COLUMN password_hash TEXT;
                     END IF;
+                    
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name='users' AND column_name='pat_token'
+                    ) THEN
+                        ALTER TABLE users ADD COLUMN pat_token TEXT;
+                    END IF;
                 END $$;
             """) 
-                
 
 
-def save_user(username, email, password_hash):
+def save_user(username, email, password_hash, pat_token):
     try:
         with get_db_conn() as conn:
             with conn.cursor() as cur:
                 cur.execute(
-                    "INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s) "
+                    "INSERT INTO users (username, email, password_hash, pat_token) VALUES (%s, %s, %s, %s) "
                     "ON CONFLICT (username) DO UPDATE SET "
-                    "email = EXCLUDED.email, password_hash = EXCLUDED.password_hash, updated_at = CURRENT_TIMESTAMP",
-                    (username, email, password_hash)
+                    "email = EXCLUDED.email, password_hash = EXCLUDED.password_hash, pat_token = EXCLUDED.pat_token, updated_at = CURRENT_TIMESTAMP",
+                    (username, email, password_hash, pat_token)
                 )
     except Exception as e:
         if "relation \"users\" does not exist" in str(e):
@@ -116,10 +129,10 @@ def save_user(username, email, password_hash):
             with get_db_conn() as conn:
                 with conn.cursor() as cur:
                     cur.execute(
-                        "INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s) "
+                        "INSERT INTO users (username, email, password_hash, pat_token) VALUES (%s, %s, %s, %s) "
                         "ON CONFLICT (username) DO UPDATE SET "
-                        "email = EXCLUDED.email, password_hash = EXCLUDED.password_hash, updated_at = CURRENT_TIMESTAMP",
-                        (username, email, password_hash)
+                        "email = EXCLUDED.email, password_hash = EXCLUDED.password_hash, pat_token = EXCLUDED.pat_token, updated_at = CURRENT_TIMESTAMP",
+                        (username, email, password_hash, pat_token)
                     )
         else:
             raise

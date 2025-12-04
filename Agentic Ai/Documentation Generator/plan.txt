@@ -1,0 +1,22 @@
+1st agent 
+
+gets content from the repo using the user's pat and then stores it in a temp local folder
+the agent will not get random cache / model/ gitignore type files 
+
+it will have another tool which it will use to commit / update the readme into the repo
+
+it will use a custom tool to get the files and store it in the local folder 
+
+2nd agent 
+
+analyse the files from the folder and generate a file wise summary 
+
+3rd agent 
+
+use all these summaries and then create a proper readme for that repo (it should be proper)
+
+
+they will work as a team and will have shared context 
+
+
+
