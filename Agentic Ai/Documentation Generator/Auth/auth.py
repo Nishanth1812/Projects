@@ -1,14 +1,10 @@
 from flask import Blueprint,flash,redirect,render_template,request,session,url_for
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash,check_password_hash
-from datetime import datetime
-import os
-from dotenv import load_dotenv
 from functools import wraps
 from Auth.auth_utils import validate_username,validate_password,secure_token,save_user,load_user,user_exists
 
 
-load_dotenv()
 
 auth_bp=Blueprint("auth",__name__)
 
@@ -25,11 +21,11 @@ def register():
     data=request.get_json(silent=True) or {}
     
     
-    email=data.get('email','') or {}
-    username=data.get('username','') or {}
-    password=data.get('password','') or {}
-    conf_password=data.get('confirm_password','') or {}
-    
+    email=data.get('email','') 
+    username=data.get('username','') 
+    password=data.get('password','') 
+    conf_password=data.get('confirm_password','') 
+    pat=data.get('pat','') 
     
     """Form validation"""
     if not email:
@@ -58,7 +54,9 @@ def register():
         return {'status': 'error', 'message': 'User already registered.'}, 409
     
     try:
-        save_user(username, email, generate_password_hash(password)) #type: ignore
+        token=secure_token(pat)
+        save_user(username, email, generate_password_hash(password),token) #type: ignore
+        
         flash('User registered successfully.', 'success')
         return {'status': 'success', 'message': 'User registered successfully.'}
     except Exception as e:
