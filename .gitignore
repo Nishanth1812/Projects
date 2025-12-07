@@ -35,7 +35,6 @@ pyproject.toml
 .python-version
 
 # Data files
-*.csv
 *.json
 *.xml
 *.yaml
